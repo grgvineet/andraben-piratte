@@ -1,0 +1,40 @@
+
+INSTALL:
+
+Instructions are given for Ubuntu.
+This library works on Android 4.3 Jelly Beam.
+Create a new Android project, and put the folder jni/ into the project's main folder (you will find the jni/ folder into ProvaJNI/). In order for you to be able to use the ABE library, you need to give write permits to your app, i.e., you should add:
+
+ <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+to your Manifest file.
+
+----- Compilation of Dependencies
+
+First, you should install adb tool (sudo apt-get install android-tools-adb) and download the ndk development kit (https://developer.android.com/tools/sdk/ndk/index.html).
+
+After that, go into the Dependencies folder, and compile compile the dependencies for our libraries:
+	* gmp-6.0
+	* pbc-0.5.14
+	* openssl-1.0.1g
+In the compile.sh script, you must modify the first 3 lines, to specify where the android_ndk folder is placed (default, in ~/) and the type of platform.
+Then run:
+
+./compile.sh
+
+After that, you will find the files you need in the buil folder of each dependency (e.g., openssl-1.0.1g/build).
+Such dependencies are precompiled in the jni folder.
+
+----- Compilation of the library
+
+In your src folder, you should include two java classes to interface with the native library code, for example com.example.NativeCPABE and com.example.NativeKPABE.
+They should implement the four main algorithms for KP-ABE and CP-ABE (i.e., setup, keygen, encryption and decryption). They will allow you to run ABE from your Android app.
+Two examples are provided in the src/ folder.
+
+Before proceding with the compilation of the library, you must modify the code of the files jni/cpabe/cpabe.c and jni/kpabe/kpabe.c to allow the binding from the JNI to the C code.
+In particular, you need to modify the name of the functions according to the two calsses you defined as interfaces. As an example, consider the setup function. If we define our Java interface for CP-ABE as com.example.interface.NativeCPABE, we must modify all function names as Java_com_example_interface_NativeCPABE_[function_name].
+
+After that, you can compile the code by running on a terminal inside the jni/ folder of your android project the command: ndk-build.
+
+
+You will find an example app already prepared, i.e., ProvaJNI.
